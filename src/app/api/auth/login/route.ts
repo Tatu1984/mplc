@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db';
+import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
 import { z } from 'zod';
@@ -40,25 +40,14 @@ export async function POST(req: NextRequest) {
 
     const { email, password } = validation.data;
 
-    // Get database connection
-    const db = getDatabase();
-
-    // Find user with tenant and producer info
-    const user = db.prepare(`
-      SELECT
-        u.*,
-        t.name as tenant_name,
-        t.slug as tenant_slug,
-        t.country as tenant_country,
-        p.id as producer_id,
-        p.srggEid as producer_srggEid,
-        p.type as producer_type,
-        p.name as producer_name
-      FROM User u
-      LEFT JOIN Tenant t ON u.tenantId = t.id
-      LEFT JOIN Producer p ON u.id = p.userId
-      WHERE u.email = ?
-    `).get(email) as any;
+    // Find user with tenant and producer info using Prisma
+    const user = await prisma.user.findFirst({
+      where: { email },
+      include: {
+        tenant: true,
+        producer: true,
+      },
+    });
 
     if (!user || !user.password) {
       return NextResponse.json(
@@ -85,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse permissions if it's a JSON string
-    let permissions = [];
+    let permissions: string[] = [];
     try {
       permissions = user.permissions ? JSON.parse(user.permissions) : [];
     } catch (e) {
@@ -106,11 +95,10 @@ export async function POST(req: NextRequest) {
       .sign(JWT_SECRET);
 
     // Update last login
-    db.prepare(`
-      UPDATE User
-      SET lastLoginAt = datetime('now')
-      WHERE id = ?
-    `).run(user.id);
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { lastLoginAt: new Date() },
+    });
 
     // Return user data and token
     return NextResponse.json({
@@ -125,15 +113,15 @@ export async function POST(req: NextRequest) {
           tenantId: user.tenantId,
           tenant: {
             id: user.tenantId,
-            name: user.tenant_name,
-            slug: user.tenant_slug,
-            country: user.tenant_country,
+            name: user.tenant.name,
+            slug: user.tenant.slug,
+            country: user.tenant.country,
           },
-          producer: user.producer_id ? {
-            id: user.producer_id,
-            srggEid: user.producer_srggEid,
-            type: user.producer_type,
-            name: user.producer_name,
+          producer: user.producer ? {
+            id: user.producer.id,
+            srggEid: user.producer.srggEid,
+            type: user.producer.type,
+            name: user.producer.name,
           } : null,
         },
       },

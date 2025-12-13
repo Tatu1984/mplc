@@ -1,15 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db';
+import prisma from '@/lib/prisma';
 import { createCommoditySchema } from '@/lib/validation';
 
 export async function GET(req: NextRequest) {
   try {
-    const db = getDatabase();
-
-    const commodities = db.prepare(`
-      SELECT * FROM Commodity
-      ORDER BY name ASC
-    `).all();
+    const commodities = await prisma.commodity.findMany({
+      orderBy: { name: 'asc' },
+    });
 
     return NextResponse.json({
       success: true,
@@ -44,10 +41,12 @@ export async function POST(req: NextRequest) {
     }
 
     const data = validation.data;
-    const db = getDatabase();
 
     // Check if commodity with same name already exists
-    const existing = db.prepare('SELECT id FROM Commodity WHERE name = ?').get(data.name);
+    const existing = await prisma.commodity.findUnique({
+      where: { name: data.name },
+    });
+
     if (existing) {
       return NextResponse.json(
         { success: false, error: { code: 'ALREADY_EXISTS', message: 'A commodity with this name already exists' } },
@@ -55,27 +54,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Generate a unique ID
-    const id = `c${Date.now()}${Math.random().toString(36).substr(2, 9)}`;
-
-    // Insert the new commodity
-    const stmt = db.prepare(`
-      INSERT INTO Commodity (id, name, category, unit, hsCode, description, icon, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
-    `);
-
-    stmt.run(
-      id,
-      data.name,
-      data.category,
-      data.unit,
-      data.hsCode || null,
-      data.description || null,
-      data.icon || null
-    );
-
-    // Fetch the created commodity
-    const commodity = db.prepare('SELECT * FROM Commodity WHERE id = ?').get(id);
+    // Create the new commodity
+    const commodity = await prisma.commodity.create({
+      data: {
+        name: data.name,
+        category: data.category,
+        unit: data.unit,
+        hsCode: data.hsCode || null,
+        description: data.description || null,
+        icon: data.icon || null,
+      },
+    });
 
     return NextResponse.json(
       { success: true, data: commodity },

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db';
+import prisma from '@/lib/prisma';
 
 export async function GET(req: NextRequest) {
   try {
-    const db = getDatabase();
-
-    const certificates = db.prepare(`
-      SELECT * FROM Certificate
-      WHERE type IN ('QUALITY', 'SGS', 'ISO')
-      ORDER BY issuedAt DESC
-    `).all();
+    const certificates = await prisma.certificate.findMany({
+      where: {
+        type: { in: ['QUALITY', 'SGS', 'ISO'] },
+      },
+      orderBy: { issuedAt: 'desc' },
+    });
 
     return NextResponse.json({
       success: true,
