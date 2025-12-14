@@ -1,6 +1,7 @@
 // SRGG Marketplace - Individual Insurance Policy API
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error } from '@/lib/api-response';
 
@@ -42,7 +43,7 @@ export async function GET(
 
     return success(policy);
   } catch (err) {
-    console.error('Policy fetch error:', err);
+    logger.error('Policy fetch error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch policy', 500);
   }
 }
@@ -116,7 +117,7 @@ export async function PATCH(
 
     return error('INVALID_INPUT', 'No action specified', 400);
   } catch (err) {
-    console.error('Policy update error:', err);
+    logger.error('Policy update error', err);
     return error('INTERNAL_ERROR', 'Failed to update policy', 500);
   }
 }
@@ -154,7 +155,7 @@ export async function DELETE(
 
     return success({ cancelled: true });
   } catch (err) {
-    console.error('Policy cancellation error:', err);
+    logger.error('Policy cancellation error', err);
     return error('INTERNAL_ERROR', 'Failed to cancel policy', 500);
   }
 }

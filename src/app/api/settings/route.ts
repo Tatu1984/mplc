@@ -1,6 +1,7 @@
 // SRGG Marketplace - User Settings API
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error } from '@/lib/api-response';
 import bcrypt from 'bcryptjs';
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
       settings: user.settings ? JSON.parse(user.settings) : {},
     });
   } catch (err) {
-    console.error('Settings fetch error:', err);
+    logger.error('Settings fetch error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch settings', 500);
   }
 }
@@ -123,7 +124,7 @@ export async function PATCH(request: NextRequest) {
       message: 'Settings updated successfully',
     });
   } catch (err) {
-    console.error('Settings update error:', err);
+    logger.error('Settings update error', err);
     return error('INTERNAL_ERROR', 'Failed to update settings', 500);
   }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest) {
       data: certificates
     });
   } catch (error) {
-    console.error('Validation fetch error:', error);
+    logger.error('Validation fetch error', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch quality certificates' },
       { status: 500 }
@@ -42,7 +43,7 @@ export async function POST(req: NextRequest) {
       message: 'Quality certificate issued successfully'
     });
   } catch (error) {
-    console.error('Validation creation error:', error);
+    logger.error('Validation creation error', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create certificate' },
       { status: 500 }

@@ -1,5 +1,6 @@
 // SRGG Marketplace - Insurance Quote API
 import { NextRequest } from 'next/server';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error } from '@/lib/api-response';
 
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
 
     return success(quote);
   } catch (err) {
-    console.error('Quote error:', err);
+    logger.error('Quote error', err);
     return error('INTERNAL_ERROR', 'Failed to generate quote', 500);
   }
 }

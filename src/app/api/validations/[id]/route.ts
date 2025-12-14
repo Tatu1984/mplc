@@ -1,6 +1,7 @@
 // SRGG Marketplace - Individual Validation API
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error } from '@/lib/api-response';
 
@@ -44,7 +45,7 @@ export async function GET(
 
     return success(validation);
   } catch (err) {
-    console.error('Validation fetch error:', err);
+    logger.error('Validation fetch error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch validation', 500);
   }
 }
@@ -120,7 +121,7 @@ export async function PATCH(
 
     return success(updated);
   } catch (err) {
-    console.error('Validation update error:', err);
+    logger.error('Validation update error', err);
     return error('INTERNAL_ERROR', 'Failed to update validation', 500);
   }
 }
@@ -159,7 +160,7 @@ export async function DELETE(
 
     return success({ deleted: true });
   } catch (err) {
-    console.error('Validation delete error:', err);
+    logger.error('Validation delete error', err);
     return error('INTERNAL_ERROR', 'Failed to delete validation', 500);
   }
 }

@@ -1,6 +1,7 @@
 // SRGG Marketplace - Tokenization API (Blockchain Integration)
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error, paginated } from '@/lib/api-response';
 
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
 
     return paginated(transformedTokens, { page, limit, total, totalPages: Math.ceil(total / limit) });
   } catch (err) {
-    console.error('Token list error:', err);
+    logger.error('Token list error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch tokens', 500);
   }
 }
@@ -156,7 +157,7 @@ export async function POST(request: NextRequest) {
       txHash: `0x${Math.random().toString(16).substring(2, 66)}`,
     }, 201);
   } catch (err) {
-    console.error('Token creation error:', err);
+    logger.error('Token creation error', err);
     return error('INTERNAL_ERROR', 'Failed to mint token', 500);
   }
 }

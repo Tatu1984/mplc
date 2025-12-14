@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { createCommoditySchema } from '@/lib/validation';
 
 export async function GET(req: NextRequest) {
@@ -13,7 +14,7 @@ export async function GET(req: NextRequest) {
       data: commodities
     });
   } catch (error) {
-    console.error('Commodities fetch error:', error);
+    logger.error('Commodities fetch error', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch commodities' },
       { status: 500 }
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('Commodity creation error:', error);
+    logger.error('Commodity creation error', error);
     return NextResponse.json(
       { success: false, error: { code: 'INTERNAL_ERROR', message: 'Failed to create commodity' } },
       { status: 500 }

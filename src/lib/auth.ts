@@ -2,9 +2,19 @@ import { compare, hash } from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { prisma } from './prisma';
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-min-32-characters'
-);
+const getJWTSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET environment variable is required in production');
+    }
+    // Only use fallback in development
+    return new TextEncoder().encode('dev-only-secret-key-min-32-characters!!');
+  }
+  return new TextEncoder().encode(secret);
+};
+
+const JWT_SECRET = getJWTSecret();
 
 export interface TokenPayload {
   userId: string;

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import bcrypt from 'bcryptjs';
 import { SignJWT } from 'jose';
 import { z } from 'zod';
@@ -9,9 +10,19 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'standalone-dev-secret-key-min-32-chars-long'
-);
+const getJWTSecret = () => {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET environment variable is required in production');
+    }
+    // Only use fallback in development
+    return new TextEncoder().encode('dev-only-secret-key-min-32-characters!!');
+  }
+  return new TextEncoder().encode(secret);
+};
+
+const JWT_SECRET = getJWTSecret();
 
 export async function POST(req: NextRequest) {
   try {
@@ -22,7 +33,7 @@ export async function POST(req: NextRequest) {
     try {
       body = JSON.parse(rawBody);
     } catch (jsonError) {
-      console.error('JSON parsing error:', jsonError);
+      logger.error('JSON parsing error', jsonError);
       return NextResponse.json(
         { success: false, error: 'Invalid JSON in request body' },
         { status: 400 }
@@ -78,7 +89,7 @@ export async function POST(req: NextRequest) {
     try {
       permissions = user.permissions ? JSON.parse(user.permissions) : [];
     } catch (e) {
-      console.error('Permission parsing error:', e);
+      logger.warn('Permission parsing error', { error: e });
       permissions = [];
     }
 
@@ -127,7 +138,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Login error:', error);
+    logger.error('Login error', error);
     return NextResponse.json(
       { success: false, error: 'Login failed', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

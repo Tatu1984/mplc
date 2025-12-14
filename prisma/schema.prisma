@@ -59,6 +59,9 @@ model User {
   notifications Notification[]
 
   @@unique([tenantId, email])
+  @@index([email])
+  @@index([role])
+  @@index([status])
 }
 
 model Session {
@@ -99,6 +102,9 @@ model Producer {
   listings   Listing[]
   parcels    Parcel[]
   validations Validation[]
+
+  @@index([tenantId])
+  @@index([verificationStatus])
 }
 
 model Parcel {
@@ -165,6 +171,12 @@ model Listing {
   tokens    Token[]
   validations Validation[]
   insurancePolicies InsurancePolicy[]
+
+  @@index([tenantId])
+  @@index([producerId])
+  @@index([commodityId])
+  @@index([status])
+  @@index([isVerified])
 }
 
 model Order {
@@ -190,6 +202,12 @@ model Order {
   listing   Listing   @relation(fields: [listingId], references: [id])
   payments  Payment[]
   shipments Shipment[]
+
+  @@index([tenantId])
+  @@index([buyerId])
+  @@index([listingId])
+  @@index([status])
+  @@index([paymentStatus])
 }
 
 // ============================================

@@ -1,6 +1,7 @@
 // SRGG Marketplace - Validations API
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error, paginated } from '@/lib/api-response';
 
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
 
     return paginated(validations, { page, limit, total, totalPages: Math.ceil(total / limit) });
   } catch (err) {
-    console.error('Validation list error:', err);
+    logger.error('Validation list error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch validations', 500);
   }
 }
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
 
     return success(validation, 201);
   } catch (err) {
-    console.error('Validation creation error:', err);
+    logger.error('Validation creation error', err);
     return error('INTERNAL_ERROR', 'Failed to create validation', 500);
   }
 }

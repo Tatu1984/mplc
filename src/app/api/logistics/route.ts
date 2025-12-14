@@ -1,6 +1,7 @@
 // SRGG Marketplace - Logistics API (Shipment Tracking)
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error, paginated } from '@/lib/api-response';
 
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     return paginated(transformedShipments, { page, limit, total, totalPages: Math.ceil(total / limit) });
   } catch (err) {
-    console.error('Logistics list error:', err);
+    logger.error('Logistics list error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch shipments', 500);
   }
 }
@@ -131,7 +132,7 @@ export async function POST(request: NextRequest) {
       message: 'Shipment created successfully',
     }, 201);
   } catch (err) {
-    console.error('Logistics creation error:', err);
+    logger.error('Logistics creation error', err);
     return error('INTERNAL_ERROR', 'Failed to create shipment', 500);
   }
 }
@@ -146,7 +147,7 @@ export async function OPTIONS() {
 
     return success(ports);
   } catch (err) {
-    console.error('Ports list error:', err);
+    logger.error('Ports list error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch ports', 500);
   }
 }

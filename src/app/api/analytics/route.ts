@@ -1,6 +1,7 @@
 // SRGG Marketplace - Analytics API
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error } from '@/lib/api-response';
 
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
 
     return error('INVALID_INPUT', 'Invalid analytics type', 400);
   } catch (err) {
-    console.error('Analytics error:', err);
+    logger.error('Analytics error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch analytics', 500);
   }
 }

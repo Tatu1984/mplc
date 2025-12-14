@@ -1,6 +1,7 @@
 // SRGG Marketplace - Notifications API
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error } from '@/lib/api-response';
 
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
       unreadCount,
     });
   } catch (err) {
-    console.error('Notifications list error:', err);
+    logger.error('Notifications list error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch notifications', 500);
   }
 }
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
 
     return success(notification, 201);
   } catch (err) {
-    console.error('Notification creation error:', err);
+    logger.error('Notification creation error', err);
     return error('INTERNAL_ERROR', 'Failed to create notification', 500);
   }
 }
@@ -122,7 +123,7 @@ export async function PATCH(request: NextRequest) {
 
     return success({ marked: true });
   } catch (err) {
-    console.error('Notification update error:', err);
+    logger.error('Notification update error', err);
     return error('INTERNAL_ERROR', 'Failed to update notifications', 500);
   }
 }

@@ -1,6 +1,7 @@
 // SRGG Marketplace - Insurance API (Lloyd's of London Integration)
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { logger } from '@/lib/logger';
 import { verifyToken } from '@/lib/auth';
 import { success, error, paginated } from '@/lib/api-response';
 
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     return paginated(transformedPolicies, { page, limit, total, totalPages: Math.ceil(total / limit) });
   } catch (err) {
-    console.error('Insurance list error:', err);
+    logger.error('Insurance list error', err);
     return error('INTERNAL_ERROR', 'Failed to fetch policies', 500);
   }
 }
@@ -147,7 +148,7 @@ export async function POST(request: NextRequest) {
       status: 'active',
     }, 201);
   } catch (err) {
-    console.error('Insurance creation error:', err);
+    logger.error('Insurance creation error', err);
     return error('INTERNAL_ERROR', 'Failed to create policy', 500);
   }
 }

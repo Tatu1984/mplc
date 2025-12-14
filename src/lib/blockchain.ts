@@ -17,7 +17,7 @@ export const getWallet = () => {
 };
 
 // Get contract instance
-export const getContract = (address: string, abi: any[]) => {
+export const getContract = (address: string, abi: ethers.InterfaceAbi) => {
   const wallet = getWallet();
   return new ethers.Contract(address, abi, wallet);
 };
@@ -82,7 +82,7 @@ export const waitForTransaction = async (txHash: string, confirmations = 1) => {
 };
 
 // IPFS integration (for metadata storage)
-export const uploadToIPFS = async (data: any): Promise<string> => {
+export const uploadToIPFS = async (data: Record<string, unknown>): Promise<string> => {
   const ipfsHost = process.env.IPFS_HOST || 'localhost';
   const ipfsPort = process.env.IPFS_PORT || '5001';
   const ipfsProtocol = process.env.IPFS_PROTOCOL || 'http';
@@ -105,7 +105,7 @@ export const uploadToIPFS = async (data: any): Promise<string> => {
   return result.Hash; // Returns IPFS hash
 };
 
-export const getFromIPFS = async (hash: string): Promise<any> => {
+export const getFromIPFS = async (hash: string): Promise<Record<string, unknown>> => {
   const ipfsGateway = process.env.IPFS_GATEWAY || 'https://gateway.ipfs.io';
   const url = `${ipfsGateway}/ipfs/${hash}`;
 
