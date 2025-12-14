@@ -50,6 +50,8 @@ jobs:
 
       - name: 🗄️ Generate Prisma Client
         run: npx prisma generate
+        env:
+          DATABASE_URL: "postgresql://placeholder:placeholder@localhost:5432/placeholder"
 
       - name: 🔍 Lint code
         run: npm run lint --if-present
@@ -58,11 +60,16 @@ jobs:
       - name: 🧪 Run tests
         run: npm test --if-present
         continue-on-error: true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://placeholder:placeholder@localhost:5432/placeholder' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-test-jwt-secret-placeholder-32chars!!' }}
 
       - name: 🏗️ Build application
         run: npm run build
         env:
           NODE_ENV: production
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://placeholder:placeholder@localhost:5432/placeholder' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-build-jwt-secret-placeholder-32chars!!' }}
 
       - name: 📤 Upload build artifacts
         uses: actions/upload-artifact@v4
