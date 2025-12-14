@@ -248,8 +248,13 @@ const ProducerRegistrationFlow = () => {
     </div>
   );
 
-  // Step 2: Personal Information
-  const PersonalInfoStep = () => (
+  // Handle individual field changes without creating new objects
+  const handleFieldChange = (field: keyof FormData, value: string | boolean | string[] | File | null) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Step 2: Personal Information - rendered inline to prevent re-creation
+  const renderPersonalInfoStep = () => (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-white mb-2">Personal Information</h2>
@@ -262,7 +267,7 @@ const ProducerRegistrationFlow = () => {
           <input
             type="text"
             value={formData.fullName}
-            onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
+            onChange={(e) => handleFieldChange('fullName', e.target.value)}
             placeholder="Enter your full legal name"
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50
@@ -277,7 +282,7 @@ const ProducerRegistrationFlow = () => {
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              onChange={(e) => handleFieldChange('email', e.target.value)}
               placeholder="your@email.com"
               className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
                 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -292,7 +297,7 @@ const ProducerRegistrationFlow = () => {
             <input
               type="tel"
               value={formData.phone}
-              onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+              onChange={(e) => handleFieldChange('phone', e.target.value)}
               placeholder="+233 XX XXX XXXX"
               className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
                 text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -307,7 +312,7 @@ const ProducerRegistrationFlow = () => {
             <input
               type="date"
               value={formData.dateOfBirth}
-              onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+              onChange={(e) => handleFieldChange('dateOfBirth', e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
                 text-white focus:outline-none focus:border-amber-500/50"
             />
@@ -318,7 +323,7 @@ const ProducerRegistrationFlow = () => {
           <label className="block text-sm text-slate-400 mb-2">Gender</label>
           <select
             value={formData.gender}
-            onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
+            onChange={(e) => handleFieldChange('gender', e.target.value)}
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white focus:outline-none focus:border-amber-500/50"
           >
@@ -335,7 +340,7 @@ const ProducerRegistrationFlow = () => {
             <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
             <select
               value={formData.nationality}
-              onChange={(e) => setFormData(prev => ({ ...prev, nationality: e.target.value }))}
+              onChange={(e) => handleFieldChange('nationality', e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
                 text-white focus:outline-none focus:border-amber-500/50"
             >
@@ -352,8 +357,8 @@ const ProducerRegistrationFlow = () => {
     </div>
   );
 
-  // Step 3: Location
-  const LocationStep = () => (
+  // Step 3: Location - rendered inline to prevent re-creation
+  const renderLocationStep = () => (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-white mb-2">Location Details</h2>
@@ -365,7 +370,7 @@ const ProducerRegistrationFlow = () => {
           <label className="block text-sm text-slate-400 mb-2">Country *</label>
           <select
             value={formData.country}
-            onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+            onChange={(e) => handleFieldChange('country', e.target.value)}
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white focus:outline-none focus:border-amber-500/50"
           >
@@ -380,7 +385,7 @@ const ProducerRegistrationFlow = () => {
           <input
             type="text"
             value={formData.region}
-            onChange={(e) => setFormData(prev => ({ ...prev, region: e.target.value }))}
+            onChange={(e) => handleFieldChange('region', e.target.value)}
             placeholder="e.g., Ashanti Region"
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -392,7 +397,7 @@ const ProducerRegistrationFlow = () => {
           <input
             type="text"
             value={formData.city}
-            onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+            onChange={(e) => handleFieldChange('city', e.target.value)}
             placeholder="e.g., Kumasi"
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -404,7 +409,7 @@ const ProducerRegistrationFlow = () => {
           <input
             type="text"
             value={formData.postalCode}
-            onChange={(e) => setFormData(prev => ({ ...prev, postalCode: e.target.value }))}
+            onChange={(e) => handleFieldChange('postalCode', e.target.value)}
             placeholder="Enter postal code"
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -416,7 +421,7 @@ const ProducerRegistrationFlow = () => {
           <input
             type="text"
             value={formData.address}
-            onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+            onChange={(e) => handleFieldChange('address', e.target.value)}
             placeholder="Enter full street address"
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -431,13 +436,13 @@ const ProducerRegistrationFlow = () => {
               <input
                 type="text"
                 value={formData.gpsCoordinates}
-                onChange={(e) => setFormData(prev => ({ ...prev, gpsCoordinates: e.target.value }))}
+                onChange={(e) => handleFieldChange('gpsCoordinates', e.target.value)}
                 placeholder="e.g., 6.6885° N, 1.6244° W"
                 className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
                   text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
               />
             </div>
-            <button className="px-4 py-3 bg-amber-500/10 text-amber-400 rounded-xl text-sm
+            <button type="button" className="px-4 py-3 bg-amber-500/10 text-amber-400 rounded-xl text-sm
               font-medium hover:bg-amber-500/20 transition-colors whitespace-nowrap">
               Get Current Location
             </button>
@@ -457,8 +462,8 @@ const ProducerRegistrationFlow = () => {
     </div>
   );
 
-  // Step 4: Identity Verification
-  const IdentityStep = () => (
+  // Step 4: Identity Verification - rendered inline to prevent re-creation
+  const renderIdentityStep = () => (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-white mb-2">Identity Verification</h2>
@@ -470,7 +475,7 @@ const ProducerRegistrationFlow = () => {
           <label className="block text-sm text-slate-400 mb-2">ID Document Type *</label>
           <select
             value={formData.idType}
-            onChange={(e) => setFormData(prev => ({ ...prev, idType: e.target.value }))}
+            onChange={(e) => handleFieldChange('idType', e.target.value)}
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white focus:outline-none focus:border-amber-500/50"
           >
@@ -487,7 +492,7 @@ const ProducerRegistrationFlow = () => {
           <input
             type="text"
             value={formData.idNumber}
-            onChange={(e) => setFormData(prev => ({ ...prev, idNumber: e.target.value }))}
+            onChange={(e) => handleFieldChange('idNumber', e.target.value)}
             placeholder="Enter ID number"
             className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700/50 rounded-xl
               text-white placeholder-slate-500 focus:outline-none focus:border-amber-500/50"
@@ -916,9 +921,9 @@ const ProducerRegistrationFlow = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 1: return <ProducerTypeStep />;
-      case 2: return <PersonalInfoStep />;
-      case 3: return <LocationStep />;
-      case 4: return <IdentityStep />;
+      case 2: return renderPersonalInfoStep();
+      case 3: return renderLocationStep();
+      case 4: return renderIdentityStep();
       case 5: return <CommoditiesStep />;
       case 6: return <AssetsStep />;
       case 7: return <BiometricsStep />;
