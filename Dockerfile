@@ -6,6 +6,7 @@
 # ============================================
 FROM node:20-alpine AS deps
 RUN apk add --no-cache libc6-compat openssl
+
 WORKDIR /app
 
 # Copy package files
@@ -13,25 +14,30 @@ COPY package.json package-lock.json ./
 COPY prisma ./prisma/
 
 # Install ALL dependencies (dev needed for build)
-RUN npm ci && npm cache clean --force
+RUN npm ci
 
 # ============================================
 # Stage 2: Builder
 # ============================================
 FROM node:20-alpine AS builder
 RUN apk add --no-cache libc6-compat openssl
+
 WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
+# Set build-time environment variables
+# DATABASE_URL is needed for Prisma but not actually used during build
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Generate Prisma client (doesn't need real DB connection)
 RUN npx prisma generate
 
 # Build the application
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_ENV=production
 RUN npm run build
 
 # ============================================
@@ -40,7 +46,7 @@ RUN npm run build
 FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Install openssl for Prisma
+# Install openssl for Prisma runtime
 RUN apk add --no-cache openssl
 
 ENV NODE_ENV=production
@@ -50,15 +56,13 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy necessary files
+# Copy necessary files from builder
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-
-# Set permissions
-RUN chown -R nextjs:nodejs /app
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 USER nextjs
 

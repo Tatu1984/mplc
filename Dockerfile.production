@@ -11,6 +11,7 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json ./
+COPY prisma ./prisma/
 
 # Install all dependencies (including dev for build)
 RUN npm ci
@@ -27,12 +28,13 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Set environment variables for build
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+# Set build-time environment variables
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
 # Generate Prisma client
-RUN PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate
+RUN npx prisma generate
 
 # Build the application
 RUN npm run build
@@ -46,8 +48,8 @@ RUN apk add --no-cache libc6-compat openssl curl
 WORKDIR /app
 
 # Set environment
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs
@@ -73,8 +75,8 @@ USER nextjs
 EXPOSE 3000
 
 # Set port environment variable
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
