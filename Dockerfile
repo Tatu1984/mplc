@@ -33,6 +33,7 @@ ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholde
 ENV JWT_SECRET="build-time-placeholder-secret-min-32-chars!!"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+ENV DOCKER_BUILD=true
 
 # Generate Prisma client (doesn't need real DB connection)
 RUN npx prisma generate
