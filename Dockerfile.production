@@ -30,6 +30,7 @@ COPY . .
 
 # Set build-time environment variables
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+ENV JWT_SECRET="build-time-placeholder-secret-min-32-chars!!"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 

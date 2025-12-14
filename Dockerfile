@@ -29,8 +29,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Set build-time environment variables
-# DATABASE_URL is needed for Prisma but not actually used during build
 ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+ENV JWT_SECRET="build-time-placeholder-secret-min-32-chars!!"
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
