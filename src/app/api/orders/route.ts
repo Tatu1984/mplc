@@ -157,10 +157,8 @@ export async function POST(request: NextRequest) {
       return unauthorized('Authentication required');
     }
 
-    // Check permissions - buyers, brokers, and admins can create orders
-    if (!['SUPER_ADMIN', 'TENANT_ADMIN', 'BUYER', 'BROKER'].includes(user.role)) {
-      return forbidden('You do not have permission to create orders');
-    }
+    // Any authenticated user can create orders (as a buyer)
+    // Only producers purchasing their own listings will be blocked later
 
     const body = await parseJsonBody(request);
     if (!body) {
