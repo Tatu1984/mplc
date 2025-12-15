@@ -5,11 +5,9 @@
   "framework": "nextjs",
   "buildCommand": "PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 npx prisma generate && npm run build",
   "installCommand": "npm ci",
-  "regions": ["iad1", "fra1"],
   "functions": {
     "src/app/api/**/*.ts": {
-      "maxDuration": 30,
-      "memory": 1024
+      "maxDuration": 10
     }
   },
   "headers": [
@@ -41,15 +39,5 @@
   "env": {
     "NEXT_PUBLIC_APP_URL": "@next_public_app_url",
     "JWT_SECRET": "@jwt_secret"
-  },
-  "crons": [
-    {
-      "path": "/api/cron/cleanup",
-      "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/notifications",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  }
 }

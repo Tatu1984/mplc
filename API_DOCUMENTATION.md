@@ -655,3 +655,51 @@ const order = await apiClient.createOrder({
 - Tokenization support
 - Insurance & Hedging APIs
 - Dashboard statistics
+
+---
+
+## Maintenance Endpoints (Cron Jobs)
+
+These endpoints handle background maintenance tasks. They can be triggered manually or via external cron services.
+
+### Cleanup Endpoint
+
+```http
+GET /api/cron/cleanup
+Authorization: Bearer <CRON_SECRET>
+```
+
+Performs cleanup tasks:
+- Deletes expired sessions
+- Removes old read notifications (30+ days)
+- Expires stale draft listings (90+ days)
+- Cleans up old analytics events (1+ year)
+
+### Notifications Endpoint
+
+```http
+GET /api/cron/notifications
+Authorization: Bearer <CRON_SECRET>
+```
+
+Processes pending notifications:
+- Order payment reminders (pending 24+ hours)
+- Shipment arrival alerts
+- Insurance policy expiry warnings
+- Hedge position expiry notifications
+
+### External Cron Services
+
+Since Vercel's free plan doesn't support cron jobs, use one of these free alternatives:
+
+1. **cron-job.org** - Free, reliable, 1-minute intervals
+2. **EasyCron** - Free tier available
+3. **GitHub Actions** - Use scheduled workflows to hit your endpoints
+
+Example cron-job.org setup:
+- URL: `https://your-app.vercel.app/api/cron/cleanup`
+- Schedule: Daily at 2:00 AM
+- HTTP Method: GET
+- Headers: `Authorization: Bearer YOUR_CRON_SECRET`
+
+Set `CRON_SECRET` in your Vercel environment variables to secure these endpoints
